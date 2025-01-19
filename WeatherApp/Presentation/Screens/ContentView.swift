@@ -90,6 +90,23 @@ struct ContentView: View {
                                 .background(Color.red.opacity(0.5))
                                 .clipShape(.rect(cornerRadius: 20))
                                 .padding()
+                                
+                                if let forecasts = details.forecasts as? Set<ForecastEntity> {
+                                    let forecastArray = Array(forecasts)
+                                    ScrollView(.horizontal) {
+                                        HStack{
+                                            ForEach(forecastArray, id: \.self) { item in
+                                                let model = ForecastModel(
+                                                    time: item.time!,
+                                                    tempC: item.tempC,
+                                                    conditionText: item.conditionText!,
+                                                    icon: item.icon!)
+                                                ForecastItem(item: model)
+                                            }
+                                        }
+                                    }
+                                }
+
                             }
                         }
                         else {

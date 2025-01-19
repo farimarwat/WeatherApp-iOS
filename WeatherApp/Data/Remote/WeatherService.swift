@@ -11,7 +11,7 @@ class WeatherService{
         case badResponse
     }
     let baseUrl = URL(string: "https://api.weatherapi.com/v1")!
-    let apiKey = ""
+    let apiKey = "994a6621fe89429ab3034108241412"
     let decoder = JSONDecoder()
     
     func fetchLocationList(for name: String) async throws -> [LocationResponse] {
@@ -40,15 +40,15 @@ class WeatherService{
     func fetchWeather(for location: String) async throws -> WeatherResponse {
         do{
             let fetchingUrl = baseUrl
-                .appending(path: "current.json")
+                .appending(path: "forecast.json")
                 .appending(queryItems: [
                     URLQueryItem(name: "key", value: apiKey),
-                    URLQueryItem(name: "q", value: location)
+                    URLQueryItem(name: "q", value: location),
+                    URLQueryItem(name: "days", value: "1")
                 ])
             print(String(fetchingUrl.absoluteString))
             let (data, response) = try await URLSession.shared.data(from: fetchingUrl)
-            print(String(data: data, encoding: .utf8) ?? " ")
-            guard let response = response as? HTTPURLResponse else {
+            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
                 throw WeatherResponseError.badResponse
             }
             decoder.keyDecodingStrategy = .convertFromSnakeCase

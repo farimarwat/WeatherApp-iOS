@@ -36,13 +36,27 @@ class DataStore{
     }
     
     func add(response:WeatherResponse) async throws{
-        let item = WeatherEntity(context: viewContext)
-        item.condition = response.details.condition.text
-        item.feelsLikeC = response.details.feelslikeC
-        item.iconUrl = response.details.condition.iconUrl
-        item.name = response.location.name
-        item.tempC = response.details.tempC
-        item.uv = response.details.uv
+        var forecasts:[ForecastEntity] = []
+        let weather = WeatherEntity(context: viewContext)
+        weather.condition = response.details.condition.text
+        weather.feelsLikeC = response.details.feelslikeC
+        weather.iconUrl = response.details.condition.iconUrl
+        weather.name = response.location.name
+        weather.tempC = response.details.tempC
+        weather.uv = response.details.uv
+        
+        if let hours = response.forecast.forecastday.first?.hour {
+            for hour in hours{
+                let fc = ForecastEntity(context: viewContext)
+                fc.time = hour.time
+                fc.tempC = hour.tempC
+                fc.icon = hour.condition.icon
+                fc.conditionText = hour.condition.text
+                forecasts.append(fc)
+            }
+            weather.forecasts = NSSet(array: forecasts)
+        }
+        
         try await saveData()
     }
     

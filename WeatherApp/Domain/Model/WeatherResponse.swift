@@ -10,6 +10,7 @@ import Foundation
 struct WeatherResponse: Codable, Identifiable{
     let location:Location
     let details:Details
+    let forecast:Forecast
     
     var id:String{
         "\(location.lat)-\(location.lon)"
@@ -46,13 +47,18 @@ struct WeatherResponse: Codable, Identifiable{
         let heatindexF:Float
         let uv:Float
         
-        struct Condition:Codable{
-            let text:String
-            let icon:String
-            let code:Int
+    }
+    
+    struct Forecast:Codable{
+        let forecastday:[ForecastDay]
+        
+        struct ForecastDay:Codable{
+            let hour:[Hour]
             
-            var iconUrl :URL {
-                URL(string:"https:\(icon)")!
+            struct Hour:Codable{
+                let time:String
+                let tempC:Float
+                let condition:Condition
             }
         }
     }
@@ -60,5 +66,17 @@ struct WeatherResponse: Codable, Identifiable{
     enum CodingKeys:String,CodingKey{
         case location
         case details = "current"
+        case forecast
+        
+    }
+    
+    struct Condition:Codable{
+        let text:String
+        let icon:String
+        let code:Int
+        
+        var iconUrl :URL {
+            URL(string:"https:\(icon)")!
+        }
     }
 }

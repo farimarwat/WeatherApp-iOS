@@ -30,6 +30,7 @@ class WeatherViewModel:ObservableObject{
             weather = try await repository.getWeather()
             loadStatus = .successfull
         }catch{
+            print(error)
             loadStatus = .error(error: error)
         }
     }
